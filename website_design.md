@@ -1,0 +1,9 @@
+<user_request>Give me a fully functional application integrating backend and SQL. i have attached the synopsis, report and also the sql file of my project. make the app interactive with good styling(css) and make the app interactive and interesting for the user so that they do want to visit the whole app make sure that the authentication and authorisation is good. and keep seperate dashboards and views for admin, user and authority. where admin can see everyone's activity. like authority can only see their dashboard and different options for them to resolve or whatever with the problem. Also the map must be visible where anyone can see the whole map with a point where the complaints can be seen in which area. and if a lot of commplaints are from a single area then it is prioritised.</user_request>
+
+<todo_list>
+1. Set up database schema and API routes for authentication (citizen/authority/admin roles), complaint submission with multimedia support, status tracking, and user/authority trust scores
+2. Create role-based authentication system with protected routes and build separate dashboard layouts for citizens (complaint submission & tracking), authorities (assigned complaints & resolution), and admin (full system oversight & analytics)
+3. Implement interactive complaint map using Google Maps API with clustered markers showing complaint density, color-coded priority visualization, and clickable markers with complaint details
+4. Build complaint management workflows including submission form with image upload, real-time status updates, escalation logic, feedback system, and authority assignment
+5. Design modern, engaging UI with animations, smooth transitions, responsive layouts, trust score visualizations, notification system, and interactive analytics charts across all dashboards
+</todo_list>
