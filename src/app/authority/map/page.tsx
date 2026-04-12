@@ -411,11 +411,13 @@ export default function AuthorityMapPage() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3">
               <Card className="overflow-hidden">
-                <div 
-                  ref={mapContainerRef} 
-                  className="h-[600px] w-full"
-                  style={{ zIndex: 0 }}
-                />
+                <CardContent className="py-0">
+                  <div
+                    ref={mapContainerRef}
+                    className="h-[600px] w-full rounded-lg"
+                    style={{ zIndex: 0 }}
+                  />
+                </CardContent>
               </Card>
             </div>
 

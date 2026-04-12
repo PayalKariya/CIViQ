@@ -15,7 +15,8 @@ import {
   CheckCircle, 
   AlertCircle,
   FileText,
-  Award
+  Award,
+  ArrowUpRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -26,6 +27,7 @@ export default function CitizenDashboard() {
     total: 0,
     pending: 0,
     inProgress: 0,
+    escalated: 0,
     resolved: 0,
   });
   const [complaints, setComplaints] = useState<any[]>([]);
@@ -39,17 +41,18 @@ export default function CitizenDashboard() {
 
   const fetchUserComplaints = async () => {
     try {
-      const response = await fetch(`/api/complaints?userId=${user?.id}&limit=10`);
+      const response = await fetch(`/api/complaints?userId=${user?.id}&limit=100`);
       const data = await response.json();
       setComplaints(data);
 
-      // Calculate stats
+      // Calculate stats (limit=100 aligns with My Complaints so counts are complete)
       const total = data.length;
       const pending = data.filter((c: any) => c.status === 'submitted' || c.status === 'assigned').length;
       const inProgress = data.filter((c: any) => c.status === 'in_progress').length;
+      const escalated = data.filter((c: any) => c.status === 'escalated').length;
       const resolved = data.filter((c: any) => c.status === 'resolved').length;
 
-      setStats({ total, pending, inProgress, resolved });
+      setStats({ total, pending, inProgress, escalated, resolved });
     } catch (error) {
       console.error('Error fetching complaints:', error);
     } finally {
@@ -121,7 +124,7 @@ export default function CitizenDashboard() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <Card className="border-0 shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -159,6 +162,20 @@ export default function CitizenDashboard() {
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-purple-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Escalated</p>
+                    <p className="text-3xl font-bold text-orange-600">{stats.escalated}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <ArrowUpRight className="w-6 h-6 text-orange-600" />
                   </div>
                 </div>
               </CardContent>
