@@ -239,7 +239,7 @@ export default function ComplaintsMap() {
           {/* Map + list: min-w-0 + isolate keeps Leaflet layers from stacking over filters */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-stretch">
             <Card className="border-0 shadow-lg md:col-span-8 md:min-w-0">
-              <CardContent className="p-0">
+              <CardContent className="py-0">
                 {loading ? (
                   <div className="flex h-[600px] items-center justify-center">
                     <div className="text-center">

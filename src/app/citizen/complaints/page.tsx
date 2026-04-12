@@ -96,6 +96,7 @@ export default function MyComplaints() {
       total: complaints.length,
       submitted: complaints.filter((c) => c.status === 'submitted').length,
       inProgress: complaints.filter((c) => c.status === 'in_progress' || c.status === 'assigned').length,
+      escalated: complaints.filter((c) => c.status === 'escalated').length,
       resolved: complaints.filter((c) => c.status === 'resolved').length,
       rejected: complaints.filter((c) => c.status === 'rejected').length,
     };
@@ -127,8 +128,8 @@ export default function MyComplaints() {
             </CardHeader>
           </Card>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {/* Stats — md+ keeps all six in one row */}
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             <Card className="border-0 shadow">
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold">{stats.total}</div>
@@ -145,6 +146,12 @@ export default function MyComplaints() {
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-purple-600">{stats.inProgress}</div>
                 <div className="text-xs text-gray-600">In Progress</div>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow">
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold text-orange-600">{stats.escalated}</div>
+                <div className="text-xs text-gray-600">Escalated</div>
               </CardContent>
             </Card>
             <Card className="border-0 shadow">

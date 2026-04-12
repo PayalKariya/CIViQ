@@ -84,11 +84,13 @@ How can I assist you today?`,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get response');
-      }
+      const data = await response.json().catch(() => ({}));
 
-      const data = await response.json();
+      if (!response.ok) {
+        const detail =
+          typeof data?.error === 'string' ? data.error : 'Failed to get response';
+        throw new Error(detail);
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -105,7 +107,8 @@ How can I assist you today?`,
       }
     } catch (error) {
       console.error('Chat error:', error);
-      toast.error('Failed to send message. Please try again.');
+      const msg = error instanceof Error ? error.message : 'Please try again.';
+      toast.error(msg);
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
