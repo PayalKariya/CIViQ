@@ -280,10 +280,10 @@ export default function ComplaintDetailsPage({ params: paramsPromise }: { params
                 </Card>
 
                 {complaint.status === 'resolved' && (
-                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
+                  <Card className="border border-gray-200 bg-white text-slate-900 shadow-lg">
                     <CardHeader>
-                      <CardTitle className="text-lg">Rate Resolution</CardTitle>
-                      <CardDescription>Your feedback affects the authority's trust score</CardDescription>
+                      <CardTitle className="text-lg text-slate-900">Rate Resolution</CardTitle>
+                      <CardDescription className="text-slate-600">Your feedback affects the authority&apos;s trust score</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Link href={`/citizen/complaints/${complaint.id}/feedback`}>

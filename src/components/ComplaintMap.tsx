@@ -54,8 +54,22 @@ export const ComplaintMap = ({ complaints, onMarkerClick }: ComplaintMapProps) =
     if (!leafletLoaded || !mapRef.current || mapInstanceRef.current || !LRef.current) return;
 
     const L = LRef.current;
-    const map = L.map(mapRef.current).setView([19.0760, 72.8777], 12);
+    const map = L.map(mapRef.current, {
+      zoomControl: true,
+    }).setView([19.0760, 72.8777], 12);
     mapInstanceRef.current = map;
+
+    const fixSize = () => {
+      try {
+        map.invalidateSize();
+      } catch {
+        /* ignore */
+      }
+    };
+    requestAnimationFrame(fixSize);
+    setTimeout(fixSize, 100);
+    setTimeout(fixSize, 400);
+    window.addEventListener('resize', fixSize);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -87,6 +101,7 @@ export const ComplaintMap = ({ complaints, onMarkerClick }: ComplaintMapProps) =
     });
 
     return () => {
+      window.removeEventListener('resize', fixSize);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -174,11 +189,22 @@ export const ComplaintMap = ({ complaints, onMarkerClick }: ComplaintMapProps) =
         mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
       }
     }
+
+    requestAnimationFrame(() => {
+      try {
+        mapInstanceRef.current?.invalidateSize();
+      } catch {
+        /* ignore */
+      }
+    });
   }, [complaints, onMarkerClick, leafletLoaded]);
 
   if (!leafletLoaded) {
     return (
-      <div ref={mapRef} className="w-full h-full rounded-lg shadow-lg flex items-center justify-center bg-gray-100" style={{ minHeight: '500px' }}>
+      <div
+        ref={mapRef}
+        className="flex h-full min-h-[400px] w-full items-center justify-center rounded-lg bg-gray-100"
+      >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading map...</p>
@@ -187,5 +213,10 @@ export const ComplaintMap = ({ complaints, onMarkerClick }: ComplaintMapProps) =
     );
   }
 
-  return <div ref={mapRef} className="w-full h-full rounded-lg shadow-lg" style={{ minHeight: '500px' }} />;
+  return (
+    <div
+      ref={mapRef}
+      className="h-full min-h-0 w-full [&_.leaflet-container]:z-0 [&_.leaflet-container]:h-full [&_.leaflet-container]:w-full"
+    />
+  );
 };

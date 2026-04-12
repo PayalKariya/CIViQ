@@ -10,11 +10,19 @@ import { Bell, CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
-export function NotificationsPanel({ onClose }: { onClose?: () => void }) {
+export function NotificationsPanel({
+  onClose,
+  onNotificationsUpdated,
+}: {
+  onClose?: () => void;
+  /** Called after unread list changes so the shell can sync (e.g. bell indicator). */
+  onNotificationsUpdated?: () => void;
+}) {
   const { user } = useAuth();
   const router = useRouter();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clearingAll, setClearingAll] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -24,38 +32,78 @@ export function NotificationsPanel({ onClose }: { onClose?: () => void }) {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`/api/notifications?userId=${user?.id}&limit=50`);
+      const response = await fetch(
+        `/api/notifications?userId=${user?.id}&limit=50&isRead=false`
+      );
+      if (!response.ok) {
+        throw new Error('Failed to load notifications');
+      }
       const data = await response.json();
-      setNotifications(data);
+      setNotifications(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const markAsRead = async (notificationId: number) => {
+  /** Mark read on the server and drop from the panel (same pattern as typical app notification centers). */
+  const dismissNotification = async (notificationId: number): Promise<boolean> => {
     try {
-      await fetch(`/api/notifications/${notificationId}/read`, {
+      const res = await fetch(`/api/notifications/${notificationId}/read`, {
         method: 'PATCH',
       });
-      
-      setNotifications(
-        notifications.map((n) =>
-          n.id === notificationId ? { ...n, isRead: true } : n
-        )
-      );
+      if (!res.ok) return false;
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      onNotificationsUpdated?.();
+      return true;
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
+      return false;
     }
   };
 
-  const handleNotificationClick = async (notification: any) => {
-    if (!notification.isRead) {
-      await markAsRead(notification.id);
+  const clearAllNotifications = async () => {
+    if (!user?.id || notifications.length === 0 || clearingAll) return;
+    setClearingAll(true);
+    try {
+      const res = await fetch('/api/notifications/read-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(
+          typeof data.error === 'string' ? data.error : 'Could not clear notifications.'
+        );
+        return;
+      }
+      setNotifications([]);
+      onNotificationsUpdated?.();
+      const n = typeof data.cleared === 'number' ? data.cleared : 0;
+      toast.success(
+        n > 0
+          ? `Cleared ${n} notification${n === 1 ? '' : 's'}.`
+          : 'All notifications cleared.'
+      );
+    } catch (e) {
+      console.error('Clear all notifications failed:', e);
+      toast.error('Could not clear notifications. Try again.');
+    } finally {
+      setClearingAll(false);
     }
-    
-    if (onClose) onClose();
+  };
+
+  const handleNotificationClick = async (notification: { id: number; complaintId?: number | null }) => {
+    const ok = await dismissNotification(notification.id);
+    if (!ok) {
+      toast.error('Could not clear notification. Try again.');
+      return;
+    }
+
+    onClose?.();
 
     if (notification.complaintId) {
       router.push(`/citizen/complaints/${notification.complaintId}`);
@@ -77,25 +125,42 @@ export function NotificationsPanel({ onClose }: { onClose?: () => void }) {
     }
   };
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = notifications.length;
 
   return (
     <Card className="w-full md:w-96 border-0 shadow-2xl">
-      <CardHeader className="border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+      <CardHeader className="space-y-3 border-b">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <CardTitle className="text-lg">Notifications</CardTitle>
             {unreadCount > 0 && (
-              <Badge variant="destructive" className="rounded-full">
+              <Badge variant="destructive" className="shrink-0 rounded-full">
                 {unreadCount}
               </Badge>
             )}
           </div>
-          {onClose && (
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
-          )}
+          <div className="flex shrink-0 items-center gap-1">
+            {unreadCount > 0 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 text-xs text-blue-600 hover:text-blue-700"
+                disabled={clearingAll || loading}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void clearAllNotifications();
+                }}
+              >
+                {clearingAll ? 'Clearing…' : 'Clear all'}
+              </Button>
+            )}
+            {onClose && (
+              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onClose}>
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
@@ -104,17 +169,16 @@ export function NotificationsPanel({ onClose }: { onClose?: () => void }) {
             <div className="p-8 text-center text-gray-500">Loading...</div>
           ) : notifications.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              <Bell className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-              <p>No notifications yet</p>
+              <Bell className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+              <p className="font-medium text-gray-700">You&apos;re all caught up</p>
+              <p className="mt-1 text-sm">No new notifications right now.</p>
             </div>
           ) : (
             <div className="divide-y">
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
-                    !notification.isRead ? 'bg-blue-50' : ''
-                  }`}
+                  className="cursor-pointer bg-blue-50 p-4 transition-colors hover:bg-blue-100/80"
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start gap-3">
@@ -128,9 +192,7 @@ export function NotificationsPanel({ onClose }: { onClose?: () => void }) {
                         {new Date(notification.createdAt).toLocaleString()}
                       </p>
                     </div>
-                    {!notification.isRead && (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2" />
-                    )}
+                    <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-600" aria-hidden />
                   </div>
                 </div>
               ))}

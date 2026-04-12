@@ -3,230 +3,280 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { MarketingChrome } from '@/components/MarketingChrome';
 import Link from 'next/link';
-import { 
-  MapPin, 
-  Shield, 
-  Users, 
-  Bell, 
-  TrendingUp, 
-  CheckCircle, 
+import { marketingContentCardClassName, marketingWindowPanelClassName, sectionBadgeClassName } from '@/lib/marketing-section-styles';
+import {
+  MapPin,
+  Shield,
+  Users,
+  Bell,
+  TrendingUp,
+  CheckCircle,
   AlertTriangle,
   Activity,
   Award,
-  ArrowRight
+  ArrowRight,
+  MessageSquare,
+  Mail,
+  ListOrdered,
 } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <MapPin className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                CIViQ+
-              </h1>
-              <p className="text-xs text-gray-600">Civic Voice Platform</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Link href="/login">
-              <Button variant="outline">Sign In</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <Badge className="mb-4" variant="secondary">
-          <Activity className="w-3 h-3 mr-1" />
-          Transforming Civic Engagement
-        </Badge>
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          Not Just Civic,
-          <br />A Unified Voice Returns
-          <br />with a Response
-        </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Report civic issues, track resolutions in real-time, and be part of building a better community. 
-          Transparent, accountable, and citizen-driven.
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Link href="/signup">
-            <Button size="lg" className="text-lg">
-              Report an Issue
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
-          <Link href="/login">
-            <Button size="lg" variant="outline" className="text-lg">
-              View Map
-            </Button>
-          </Link>
+    <MarketingChrome homePage>
+      <div className="relative overflow-x-hidden">
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          aria-hidden
+        >
+          <div className="absolute top-24 left-1/2 h-72 w-[min(100%,42rem)] -translate-x-1/2 rounded-full bg-gradient-to-br from-blue-200/40 via-indigo-200/30 to-purple-200/40 blur-3xl" />
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-blue-600">50+</div>
-            <div className="text-sm text-gray-600">Active Complaints</div>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-green-600">11</div>
-            <div className="text-sm text-gray-600">Resolved Issues</div>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-purple-600">21</div>
-            <div className="text-sm text-gray-600">Active Users</div>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-orange-600">92%</div>
-            <div className="text-sm text-gray-600">Satisfaction Rate</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
-          <p className="text-gray-600 text-lg">Everything you need for effective civic engagement</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                <MapPin className="w-7 h-7 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Interactive Map</h3>
-              <p className="text-gray-600">
-                View all complaints on an interactive map with clustering for high-density areas. 
-                See what's happening in your neighborhood.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                <CheckCircle className="w-7 h-7 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Real-Time Tracking</h3>
-              <p className="text-gray-600">
-                Track your complaints from submission to resolution. Get instant notifications 
-                on status updates and responses.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                <Shield className="w-7 h-7 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Anonymous Reporting</h3>
-              <p className="text-gray-600">
-                Report sensitive issues anonymously without fear. Your privacy and safety 
-                are our top priorities.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
-                <Users className="w-7 h-7 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Role-Based Access</h3>
-              <p className="text-gray-600">
-                Separate dashboards for citizens, authorities, and admins. Everyone sees 
-                what they need to see.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-4">
-                <AlertTriangle className="w-7 h-7 text-red-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Smart Escalation</h3>
-              <p className="text-gray-600">
-                Automatic escalation of unresolved complaints. No issue gets forgotten 
-                or ignored.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
-                <Award className="w-7 h-7 text-indigo-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Trust Scoring</h3>
-              <p className="text-gray-600">
-                Reputation system for both citizens and authorities. Promotes accountability 
-                and responsible reporting.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-12 text-center text-white shadow-2xl">
-          <h2 className="text-4xl font-bold mb-4">Ready to Make a Difference?</h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join thousands of citizens making their voices heard and creating positive change
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 pt-16 pb-20 md:pt-20 md:pb-24 text-center">
+          <Badge className={`mb-5 ${sectionBadgeClassName}`} variant="secondary">
+            <Activity className="shrink-0" />
+            Transforming Civic Engagement
+          </Badge>
+          <h1 className="mx-auto mb-6 max-w-4xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-5xl font-bold leading-[1.1] tracking-tight text-transparent md:text-6xl">
+            Not Just Civic,
+            <br />
+            A Unified Voice Returns
+            <br />
+            with a Response
+          </h1>
+          <p className="mx-auto mb-10 max-w-3xl text-xl leading-relaxed text-gray-600">
+            Report civic issues, track resolutions in real time, and help build a more responsive community—with
+            transparency, clear accountability, and tools designed for both citizens and authorities.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/signup">
-              <Button size="lg" variant="secondary" className="text-lg">
-                Create Free Account
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center">
+            <Link href="/signup" className="sm:inline-flex">
+              <Button size="lg" className="h-12 w-full px-8 text-lg shadow-md shadow-blue-600/20 sm:w-auto">
+                Report an Issue
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="text-lg bg-white/10 hover:bg-white/20 text-white border-white">
-                Sign In
+            <Link href="/login" className="sm:inline-flex">
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-12 w-full border-gray-200 bg-white/70 px-8 text-lg hover:bg-white sm:w-auto"
+              >
+                View Map
               </Button>
             </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur-lg">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900">CIViQ+</div>
-                <div className="text-xs text-gray-600">© 2025 All rights reserved</div>
-              </div>
+        {/* Features Section */}
+        <section id="features" className="container mx-auto scroll-mt-24 px-4 py-16 md:py-20">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
+            <Badge className={`mb-4 ${sectionBadgeClassName}`} variant="secondary">
+              Features
+            </Badge>
+            <h2 className="mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
+              Built for real civic workflows
+            </h2>
+            <p className="text-lg text-gray-600">
+              From first report to closure, CIViQ+ connects citizens, field teams, and administrators on one platform.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {[
+              {
+                icon: MapPin,
+                iconBg: 'bg-blue-100',
+                iconColor: 'text-blue-600',
+                title: 'Interactive map',
+                body:
+                  'See complaints on a live map with clustering in busy areas. Understand patterns by neighborhood and priority.',
+              },
+              {
+                icon: CheckCircle,
+                iconBg: 'bg-green-100',
+                iconColor: 'text-green-600',
+                title: 'Real-time tracking',
+                body:
+                  'Follow each case from submission to resolution with status history and timely updates you can rely on.',
+              },
+              {
+                icon: Shield,
+                iconBg: 'bg-purple-100',
+                iconColor: 'text-purple-600',
+                title: 'Anonymous reporting',
+                body:
+                  'Submit sensitive issues without revealing your identity when you need an extra layer of privacy and safety.',
+              },
+              {
+                icon: Users,
+                iconBg: 'bg-orange-100',
+                iconColor: 'text-orange-600',
+                title: 'Role-based access',
+                body:
+                  'Dedicated experiences for citizens, authorities, and administrators—each role sees the right data and actions.',
+              },
+              {
+                icon: AlertTriangle,
+                iconBg: 'bg-red-100',
+                iconColor: 'text-red-600',
+                title: 'Smart escalation',
+                body:
+                  'Unresolved items can move up the chain automatically so nothing stalls unnoticed at the wrong level.',
+              },
+              {
+                icon: Award,
+                iconBg: 'bg-indigo-100',
+                iconColor: 'text-indigo-600',
+                title: 'Trust & accountability',
+                body:
+                  'Reputation signals encourage fair reporting and dependable responses from everyone in the system.',
+              },
+              {
+                icon: Bell,
+                iconBg: 'bg-sky-100',
+                iconColor: 'text-sky-600',
+                title: 'Notifications',
+                body:
+                  'Stay informed when your complaint changes state or when authorities need clarification or confirmation.',
+              },
+              {
+                icon: TrendingUp,
+                iconBg: 'bg-emerald-100',
+                iconColor: 'text-emerald-600',
+                title: 'Insights for teams',
+                body:
+                  'Trends and workload visibility help departments plan resources and demonstrate progress to leadership.',
+              },
+              {
+                icon: MessageSquare,
+                iconBg: 'bg-violet-100',
+                iconColor: 'text-violet-600',
+                title: 'Structured dialogue',
+                body:
+                  'Keep conversation and evidence attached to the case so context is never scattered across channels.',
+              },
+            ].map((item) => (
+              <Card
+                key={item.title}
+                className={`${marketingContentCardClassName} transition-shadow hover:shadow-xl hover:shadow-indigo-900/[0.06]`}
+              >
+                <CardContent className="p-8">
+                  <div
+                    className={`mb-4 flex h-14 w-14 items-center justify-center rounded-xl ${item.iconBg}`}
+                  >
+                    <item.icon className={`h-7 w-7 ${item.iconColor}`} />
+                  </div>
+                  <h3 className="mb-3 text-xl font-bold text-gray-900">{item.title}</h3>
+                  <p className="text-gray-600">{item.body}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="how-it-works" className="container mx-auto scroll-mt-24 px-4 py-12 md:py-16">
+          <div className={marketingWindowPanelClassName}>
+            <div className="mx-auto mb-10 max-w-xl text-center">
+              <Badge className={`mb-4 ${sectionBadgeClassName}`} variant="secondary">
+                <ListOrdered className="shrink-0" />
+                Steps
+              </Badge>
+              <h2 className="mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
+                How it works
+              </h2>
+              <p className="text-lg text-gray-600">Three simple steps from voice to verified action.</p>
             </div>
-            <div className="flex gap-6 text-sm text-gray-600">
-              <a href="#" className="hover:text-blue-600">About</a>
-              <a href="#" className="hover:text-blue-600">Privacy</a>
-              <a href="#" className="hover:text-blue-600">Terms</a>
-              <a href="#" className="hover:text-blue-600">Contact</a>
+            <div className="grid md:grid-cols-3 gap-8 md:gap-10">
+              {[
+                {
+                  step: '1',
+                  title: 'Report with context',
+                  text: 'Describe the issue, attach photos if helpful, and place it on the map so responders know exactly where to act.',
+                },
+                {
+                  step: '2',
+                  title: 'Authority triage',
+                  text: 'The right department receives the case, updates status, and can request details—keeping you in the loop.',
+                },
+                {
+                  step: '3',
+                  title: 'Resolve & learn',
+                  text: 'Closure is recorded with accountability. Patterns feed better service over time across your community.',
+                },
+              ].map((s) => (
+                <div key={s.step} className="relative text-center md:text-left">
+                  <div className="mx-auto md:mx-0 mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-sm font-bold text-white shadow-md">
+                    {s.step}
+                  </div>
+                  <h3 className="mb-3 text-xl font-bold text-gray-900">{s.title}</h3>
+                  <p className="text-gray-600">{s.text}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </section>
+
+        {/* About */}
+        <section id="about" className="scroll-mt-24 border-t border-white/50">
+          <div className="container mx-auto px-4 py-12 md:py-16">
+            <div className={marketingWindowPanelClassName}>
+              <div className="mx-auto mb-10 max-w-xl text-center">
+                <Badge className={`mb-4 ${sectionBadgeClassName}`} variant="secondary">
+                  <Shield className="shrink-0" />
+                  About CIViQ+
+                </Badge>
+                <h2 className="mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
+                  Civic technology with clarity
+                </h2>
+                <p className="text-lg text-gray-600">
+                  Who we serve and what CIViQ+ is built to do for your community.
+                </p>
+              </div>
+              <div className="mx-auto max-w-3xl space-y-4 text-gray-600">
+                <p>
+                  CIViQ+ is a civic complaint and engagement platform that helps residents report issues—such as
+                  infrastructure, sanitation, safety, and public services—and follow them through to resolution alongside
+                  the authorities responsible for action.
+                </p>
+                <p>
+                  We believe accountability grows when reporting is easy, status is visible, and every voice can receive a
+                  structured response. The product supports citizens who submit and track complaints, authority staff who
+                  manage and resolve them, and administrators who oversee verification and system health.
+                </p>
+                <p>
+                  By combining mapping, workflows, notifications, and role-based dashboards, CIViQ+ aims to reduce friction
+                  between the public and the institutions that serve them—without replacing official processes, but making
+                  them easier to navigate for everyone involved.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section id="contact" className="scroll-mt-24 border-t border-white/50">
+          <div className="container mx-auto max-w-3xl px-4 py-16 text-center md:py-20">
+            <h2 className="mb-4 inline-flex items-center justify-center gap-3 text-4xl font-bold tracking-tight">
+              <Mail className="h-8 w-8 shrink-0 text-indigo-600" aria-hidden />
+              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Contact
+              </span>
+            </h2>
+            <p className="mx-auto mb-6 max-w-lg text-xl text-gray-600">
+              Questions about CIViQ+, partnerships, or support for your organization? Reach out—we read every message.
+            </p>
+            <a
+              href="mailto:support@civiq.app"
+              className="inline-flex font-medium text-blue-600 transition-colors hover:text-indigo-600 hover:underline"
+            >
+              support@civiq.app
+            </a>
+          </div>
+        </section>
+      </div>
+    </MarketingChrome>
   );
 }

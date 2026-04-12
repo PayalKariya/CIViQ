@@ -163,23 +163,23 @@ export default function ComplaintsMap() {
             </CardHeader>
           </Card>
 
-          {/* Filters */}
-          <Card className="border-0 shadow-lg">
+          {/* Filters — z-20 so this card stays above the map stack; selects use high z on content */}
+          <Card className="relative z-20 border-0 shadow-lg">
             <CardHeader>
               <CardTitle className="text-lg">Filter Complaints</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid gap-4 md:grid-cols-3">
                 <div>
-                    <label className="text-sm font-medium mb-2 block">Domain</label>
+                    <label className="mb-2 block text-sm font-medium">Domain</label>
                     <Select
                       value={filters.category}
                       onValueChange={(value) => setFilters({ ...filters, category: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select domain" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[2000]">
                         <SelectItem value="all">All Domains</SelectItem>
                         {DOMAINS.map((domain) => (
                           <SelectItem key={domain.id} value={domain.id}>
@@ -194,15 +194,15 @@ export default function ComplaintsMap() {
                   </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Status</label>
+                  <label className="mb-2 block text-sm font-medium">Status</label>
                   <Select
                     value={filters.status}
                     onValueChange={(value) => setFilters({ ...filters, status: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[2000]">
                       <SelectItem value="all">All Statuses</SelectItem>
                       <SelectItem value="submitted">Submitted</SelectItem>
                       <SelectItem value="assigned">Assigned</SelectItem>
@@ -215,15 +215,15 @@ export default function ComplaintsMap() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Priority</label>
+                  <label className="mb-2 block text-sm font-medium">Priority</label>
                   <Select
                     value={filters.priority}
                     onValueChange={(value) => setFilters({ ...filters, priority: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[2000]">
                       <SelectItem value="all">All Priorities</SelectItem>
                       <SelectItem value="low">Low</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
@@ -236,22 +236,21 @@ export default function ComplaintsMap() {
             </CardContent>
           </Card>
 
-          {/* Map Visualization */}
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Map Area with Leaflet */}
-            <Card className="md:col-span-2 border-0 shadow-lg">
+          {/* Map + list: min-w-0 + isolate keeps Leaflet layers from stacking over filters */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-stretch">
+            <Card className="border-0 shadow-lg md:col-span-8 md:min-w-0">
               <CardContent className="p-0">
                 {loading ? (
-                  <div className="h-[600px] flex items-center justify-center">
+                  <div className="flex h-[600px] items-center justify-center">
                     <div className="text-center">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                      <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
                       <p className="text-muted-foreground">Loading map...</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="h-[600px] rounded-lg overflow-hidden">
-                    <ComplaintMap 
-                      complaints={mapComplaints} 
+                  <div className="relative isolate z-0 h-[600px] w-full overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
+                    <ComplaintMap
+                      complaints={mapComplaints}
                       onMarkerClick={handleMarkerClick}
                     />
                   </div>
@@ -259,13 +258,12 @@ export default function ComplaintsMap() {
               </CardContent>
             </Card>
 
-            {/* Complaints List */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg md:col-span-4 md:min-w-0">
               <CardHeader>
                 <CardTitle>Nearby Complaints</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4 max-h-[540px] overflow-y-auto">
+                <div className="max-h-[min(600px,calc(100vh-12rem))] space-y-4 overflow-y-auto md:max-h-[560px]">
                   {loading ? (
                     <div className="text-center py-8 text-muted-foreground">Loading...</div>
                   ) : filteredComplaints.length === 0 ? (

@@ -365,7 +365,7 @@ export default function AuthorityMapPage() {
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[2000]">
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="submitted">Submitted</SelectItem>
                   <SelectItem value="assigned">Assigned</SelectItem>
@@ -378,7 +378,7 @@ export default function AuthorityMapPage() {
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[2000]">
                   <SelectItem value="all">All Priority</SelectItem>
                   <SelectItem value="critical">Critical</SelectItem>
                   <SelectItem value="high">High</SelectItem>

@@ -17,6 +17,7 @@ interface User {
   employeeId: string | null;
   organizationRegion: string | null;
   organizationName: string | null;
+  designation?: string | null;
   verificationStatus: 'pending' | 'verified' | 'rejected' | null;
   isActive: boolean;
 }
@@ -47,6 +48,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function parseJsonBody<T>(text: string, context: string): T {
+  if (!text.trim()) {
+    throw new Error(`${context}: empty response from server.`);
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(
+      `${context}: server returned a non-JSON response (often a missing API route or database error). Check the dev console and that TURSO_CONNECTION_URL is set.`
+    );
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,11 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     try {
       const response = await fetch(`/api/users/${user.id}`);
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        localStorage.setItem('civiq_user', JSON.stringify(userData));
-      }
+      const text = await response.text();
+      if (!response.ok) return;
+      const userData = parseJsonBody<User>(text, 'Refresh user');
+      setUser(userData);
+      localStorage.setItem('civiq_user', JSON.stringify(userData));
     } catch (error) {
       console.error('Error refreshing user:', error);
     }
@@ -73,14 +87,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Refresh user data on mount to ensure trust score is up to date
       const data = JSON.parse(storedUser);
       fetch(`/api/users/${data.id}`)
-        .then(res => res.json())
-        .then(userData => {
-          if (!userData.error) {
-            setUser(userData);
-            localStorage.setItem('civiq_user', JSON.stringify(userData));
+        .then(async (res) => {
+          const text = await res.text();
+          if (!res.ok) return;
+          try {
+            const userData = parseJsonBody<User & { error?: string }>(text, 'Load user');
+            if (!userData.error) {
+              setUser(userData);
+              localStorage.setItem('civiq_user', JSON.stringify(userData));
+            }
+          } catch (e) {
+            console.error('Initial refresh failed', e);
           }
         })
-        .catch(err => console.error('Initial refresh failed', err));
+        .catch((err) => console.error('Initial refresh failed', err));
     }
     setLoading(false);
   }, []);
@@ -92,12 +112,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ email, password }),
     });
 
+    const text = await response.text();
+    const payload = parseJsonBody<{ error?: string } & Partial<User>>(text, 'Sign in');
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Login failed');
+      throw new Error(payload.error || `Sign in failed (${response.status})`);
     }
 
-    const userData = await response.json();
+    const userData = payload as User;
     setUser(userData);
     localStorage.setItem('civiq_user', JSON.stringify(userData));
 
@@ -153,12 +175,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }),
     });
 
+    const text = await response.text();
+    const payload = parseJsonBody<{ error?: string } & Partial<User>>(text, 'Sign up');
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Signup failed');
+      throw new Error(payload.error || `Sign up failed (${response.status})`);
     }
 
-    const userData = await response.json();
+    const userData = payload as User;
     setUser(userData);
     localStorage.setItem('civiq_user', JSON.stringify(userData));
 

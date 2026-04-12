@@ -144,11 +144,9 @@ How can I assist you today?`,
   }
 
   return (
-    <Card 
-      className={`fixed z-50 shadow-2xl border-2 transition-all duration-300 ${
-        isMinimized 
-          ? 'bottom-6 right-6 w-80 h-16' 
-          : 'bottom-6 right-6 w-96 h-[600px]'
+    <Card
+      className={`fixed z-50 border border-gray-200 bg-white/95 shadow-xl shadow-gray-900/[0.08] backdrop-blur-md transition-all duration-300 ${
+        isMinimized ? 'bottom-6 right-6 h-16 w-80' : 'bottom-6 right-6 h-[600px] w-96'
       }`}
     >
       <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">

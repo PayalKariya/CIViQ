@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { AlertCircle, MapPin } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { MarketingChrome } from '@/components/MarketingChrome';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
@@ -32,19 +33,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl mb-4 shadow-lg">
-            <MapPin className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            CIViQ+
-          </h1>
-          <p className="text-gray-600 mt-2">Not Just Civic, A Unified Voice Returns with a Response</p>
-        </div>
-
-        <Card className="shadow-xl border-0">
+    <MarketingChrome>
+      <div className="flex flex-1 flex-col items-center justify-center p-4 py-10 md:py-14">
+        <div className="w-full max-w-md">
+        <Card className="border border-gray-200 bg-white text-slate-900 shadow-xl">
           <CardHeader>
             <CardTitle>Welcome Back</CardTitle>
             <CardDescription>Sign in to your account to continue</CardDescription>
@@ -110,7 +102,8 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </MarketingChrome>
   );
 }

@@ -21,6 +21,7 @@ export default function SubmitComplaint() {
   const { user } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -109,23 +110,57 @@ export default function SubmitComplaint() {
   };
 
   const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setFormData({
-            ...formData,
-            latitude: position.coords.latitude.toString(),
-            longitude: position.coords.longitude.toString(),
-          });
-          toast.success('Location captured successfully!');
-        },
-        (error) => {
-          toast.error('Failed to get location. Please enter manually.');
-        }
-      );
-    } else {
+    if (!navigator.geolocation) {
       toast.error('Geolocation is not supported by your browser');
+      return;
     }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        try {
+          const res = await fetch(
+            `/api/geocode/reverse?lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}`
+          );
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(typeof data.error === 'string' ? data.error : 'Address lookup failed');
+          }
+          const displayName =
+            typeof data.displayName === 'string' ? data.displayName : '';
+          setFormData((prev) => ({
+            ...prev,
+            latitude: String(lat),
+            longitude: String(lon),
+            locationAddress: displayName || prev.locationAddress,
+          }));
+          toast.success(
+            displayName
+              ? 'Current location and address applied.'
+              : 'Coordinates captured. Add or edit the address if needed.'
+          );
+        } catch (e) {
+          setFormData((prev) => ({
+            ...prev,
+            latitude: String(lat),
+            longitude: String(lon),
+          }));
+          toast.error(
+            e instanceof Error
+              ? `${e.message} Coordinates saved—please enter the address.`
+              : 'Could not resolve address. Coordinates saved—please enter the address.'
+          );
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        setLocating(false);
+        toast.error('Failed to get location. Please enter manually.');
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 }
+    );
   };
 
   return (
@@ -259,10 +294,15 @@ export default function SubmitComplaint() {
                         type="button"
                         variant="outline"
                         size="sm"
+                        disabled={locating}
                         onClick={handleGetLocation}
                       >
-                        <MapPin className="w-4 h-4 mr-2" />
-                        Auto-capture Coordinates
+                        {locating ? (
+                          <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />
+                        ) : (
+                          <MapPin className="mr-2 h-4 w-4 shrink-0" />
+                        )}
+                        {locating ? 'Getting location…' : 'Get current location'}
                       </Button>
                     </div>
                     <Input
