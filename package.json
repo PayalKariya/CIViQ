@@ -65,6 +65,7 @@
     "embla-carousel-react": "^8.6.0",
     "estree-walker": "2.0.2",
     "framer-motion": "^12.23.22",
+    "google-auth-library": "^10.6.2",
     "input-otp": "^1.4.2",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",

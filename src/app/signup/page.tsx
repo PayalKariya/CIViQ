@@ -231,7 +231,7 @@ export default function SignupPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <User className="w-5 h-5 text-blue-600" />
-                          <span className="font-semibold text-gray-900">User / Student</span>
+                          <span className="font-semibold text-gray-900">User</span>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">
                           Report issues, track complaints, and help improve your environment
@@ -250,7 +250,7 @@ export default function SignupPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <Shield className="w-5 h-5 text-amber-600" />
-                          <span className="font-semibold text-gray-900">Authority / Staff</span>
+                          <span className="font-semibold text-gray-900">Authority</span>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">
                           Handle and resolve complaints in your assigned department

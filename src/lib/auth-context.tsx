@@ -25,6 +25,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<void>;
   signup: (
     email: string,
     password: string,
@@ -138,6 +139,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (credential: string) => {
+    const response = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential }),
+    });
+
+    const text = await response.text();
+    const payload = parseJsonBody<{ error?: string } & Partial<User>>(text, 'Google sign in');
+
+    if (!response.ok) {
+      throw new Error(payload.error || `Google sign in failed (${response.status})`);
+    }
+
+    const userData = payload as User;
+    setUser(userData);
+    localStorage.setItem('civiq_user', JSON.stringify(userData));
+
+    if (userData.role === 'admin') {
+      router.push('/admin');
+    } else if (userData.role === 'authority') {
+      if (userData.verificationStatus === 'pending') {
+        router.push('/authority/pending');
+      } else if (userData.verificationStatus === 'verified') {
+        router.push('/authority');
+      } else {
+        throw new Error('Your authority account has been rejected. Please contact support.');
+      }
+    } else {
+      router.push('/citizen');
+    }
+  };
+
   const signup = async (
     email: string,
     password: string,
@@ -202,7 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, refreshUser, loading }}>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, signup, logout, refreshUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
