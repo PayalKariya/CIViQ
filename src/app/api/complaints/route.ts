@@ -3,6 +3,9 @@ import { db } from '@/db';
 import { complaints, users } from '@/db/schema';
 import { eq, like, and, or, desc } from 'drizzle-orm';
 
+const normalizeText = (value?: string | null) =>
+  (value ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -104,13 +107,14 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString();
+    const normalizedRegion = normalizeText(organizationRegion);
     
     // Automatic Assignment Logic
     let assignedTo = null;
     let status = 'submitted';
 
     // 1. Try matching Level 1 Ground Worker (Specific Issue Type)
-    const groundWorker = await db
+    const groundWorkerCandidates = await db
       .select()
       .from(users)
       .where(
@@ -118,19 +122,23 @@ export async function POST(request: NextRequest) {
           eq(users.role, 'authority'),
           eq(users.verificationStatus, 'verified'),
           eq(users.authorityLevel, 1),
-          eq(users.organizationRegion, organizationRegion),
-          eq(users.organizationName, organizationName),
+          eq(users.domain, domain),
+          eq(users.department, department),
           eq(users.issueType, issueType)
         )
       )
-      .limit(1);
+      .limit(20);
 
-    if (groundWorker.length > 0) {
-      assignedTo = groundWorker[0].id;
+    const groundWorker = groundWorkerCandidates.find(
+      (authority) => normalizeText(authority.organizationRegion) === normalizedRegion
+    );
+
+    if (groundWorker) {
+      assignedTo = groundWorker.id;
       status = 'assigned';
     } else {
       // 2. Try matching Level 2 Supervisor (Department Wide)
-      const supervisor = await db
+      const supervisorCandidates = await db
         .select()
         .from(users)
         .where(
@@ -138,19 +146,22 @@ export async function POST(request: NextRequest) {
             eq(users.role, 'authority'),
             eq(users.verificationStatus, 'verified'),
             eq(users.authorityLevel, 2),
-            eq(users.organizationRegion, organizationRegion),
-            eq(users.organizationName, organizationName),
+            eq(users.domain, domain),
             eq(users.department, department)
           )
         )
-        .limit(1);
+        .limit(20);
 
-      if (supervisor.length > 0) {
-        assignedTo = supervisor[0].id;
+      const supervisor = supervisorCandidates.find(
+        (authority) => normalizeText(authority.organizationRegion) === normalizedRegion
+      );
+
+      if (supervisor) {
+        assignedTo = supervisor.id;
         status = 'assigned';
       } else {
         // 3. Try matching Level 3 Domain Officer (Domain Wide)
-        const domainOfficer = await db
+        const domainOfficerCandidates = await db
           .select()
           .from(users)
           .where(
@@ -158,15 +169,17 @@ export async function POST(request: NextRequest) {
               eq(users.role, 'authority'),
               eq(users.verificationStatus, 'verified'),
               eq(users.authorityLevel, 3),
-              eq(users.organizationRegion, organizationRegion),
-              eq(users.organizationName, organizationName),
               eq(users.domain, domain)
             )
           )
-          .limit(1);
+          .limit(20);
 
-        if (domainOfficer.length > 0) {
-          assignedTo = domainOfficer[0].id;
+        const domainOfficer = domainOfficerCandidates.find(
+          (authority) => normalizeText(authority.organizationRegion) === normalizedRegion
+        );
+
+        if (domainOfficer) {
+          assignedTo = domainOfficer.id;
           status = 'assigned';
         }
       }

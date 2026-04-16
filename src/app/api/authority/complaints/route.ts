@@ -3,6 +3,9 @@ import { db } from '@/db';
 import { complaints, users } from '@/db/schema';
 import { eq, and, or, desc, sql } from 'drizzle-orm';
 
+const normalizeText = (value?: string | null) =>
+  (value ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -30,17 +33,9 @@ export async function GET(request: NextRequest) {
     const userDomain = authUser.domain;
     const userIssueType = authUser.issueType;
     const userRegion = authUser.organizationRegion;
-    const userOrgName = authUser.organizationName;
+    const normalizedUserRegion = normalizeText(userRegion);
 
     let conditions: any[] = [];
-
-    // Base filtering by organization and region
-    if (userRegion) {
-      conditions.push(eq(complaints.organizationRegion, userRegion));
-    }
-    if (userOrgName) {
-      conditions.push(eq(complaints.organizationName, userOrgName));
-    }
 
     if (userLevel === 1) {
       if (!userIssueType) {
@@ -114,15 +109,19 @@ export async function GET(request: NextRequest) {
         desc(complaints.createdAt)
       );
 
-    const total = results.length;
-    const pending = results.filter(c => c.status === 'submitted' || c.status === 'assigned').length;
-    const inProgress = results.filter(c => c.status === 'in_progress').length;
-    const resolved = results.filter(c => c.status === 'resolved').length;
-    const escalated = results.filter(c => c.status === 'escalated').length;
-    const critical = results.filter(c => c.priority === 'critical' && c.status !== 'resolved').length;
+    const filteredResults = normalizedUserRegion
+      ? results.filter((complaint) => normalizeText(complaint.organizationRegion) === normalizedUserRegion)
+      : results;
+
+    const total = filteredResults.length;
+    const pending = filteredResults.filter(c => c.status === 'submitted' || c.status === 'assigned').length;
+    const inProgress = filteredResults.filter(c => c.status === 'in_progress').length;
+    const resolved = filteredResults.filter(c => c.status === 'resolved').length;
+    const escalated = filteredResults.filter(c => c.status === 'escalated').length;
+    const critical = filteredResults.filter(c => c.priority === 'critical' && c.status !== 'resolved').length;
 
     if (includeMap) {
-      const mapData = results
+      const mapData = filteredResults
         .filter(c => c.latitude && c.longitude)
         .map(c => ({
           id: c.id,
@@ -140,7 +139,7 @@ export async function GET(request: NextRequest) {
         }));
 
       return NextResponse.json({
-        complaints: results,
+        complaints: filteredResults,
         mapData,
         stats: { total, pending, inProgress, resolved, escalated, critical },
         userLevel,
@@ -148,7 +147,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      complaints: results,
+      complaints: filteredResults,
       stats: { total, pending, inProgress, resolved, escalated, critical },
       userLevel,
     });
